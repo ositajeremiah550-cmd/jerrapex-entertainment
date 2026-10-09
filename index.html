@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<meta name="description" content="JerrApex Entertainment — your destination for music, videos, comedy and entertainment news.">
+<title>JerrApex Entertainment</title>
+<style>
+:root {
+  --gold: #d8ad45;
+  --black: #080808;
+  --panel: #151515;
+  --text: #f7f4ed;
+  --muted: #aaa49a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--black);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+header {
+  padding: 20px 6%;
+  border-bottom: 1px solid #29251a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+.logo { font-size: 23px; font-weight: 900; letter-spacing: -1px; }
+.logo span, h1 span { color: var(--gold); }
+nav { display: flex; gap: 17px; flex-wrap: wrap; }
+nav a { color: #eee; text-decoration: none; font-size: 13px; }
+nav a:hover { color: var(--gold); }
+.hero {
+  padding: 75px 7% 65px;
+  background: radial-gradient(ellipse at top right, #443516 0%, #17130b 32%, #080808 75%);
+  text-align: center;
+}
+.tag {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-size: 11px;
+}
+h1 { font-size: clamp(37px, 8vw, 70px); margin: 18px 0; }
+.hero p { color: #c3bdb2; line-height: 1.8; max-width: 560px; margin: 0 auto 25px; }
+.button {
+  display: inline-block;
+  padding: 13px 22px;
+  background: var(--gold);
+  color: #090909;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+.button.secondary { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
+main { padding: 35px 6%; }
+.section-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+h2 { font-size: 24px; }
+h2 span { color: var(--gold); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+.card { background: var(--panel); border: 1px solid #28251d; border-radius: 10px; overflow: hidden; }
+.art {
+  height: 140px;
+  display: grid;
+  place-items: center;
+  font-size: 45px;
+  background: linear-gradient(135deg, #302515, #101010);
+}
+.card-body { padding: 17px; }
+.card h3 { margin: 0 0 8px; }
+.card p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+.card a { color: var(--gold); text-decoration: none; font-size: 13px; }
+.news { border-bottom: 1px solid #292929; padding: 14px 0; }
+.news p { color: var(--muted); font-size: 13px; }
+.notice { color: var(--muted); font-size: 13px; line-height: 1.7; }
+footer { border-top: 1px solid #29251a; padding: 28px 6%; text-align: center; color: var(--muted); font-size: 12px; }
+input { width: 100%; padding: 13px; margin: 7px 0 15px; background: #090909; border: 1px solid #393327; color: white; border-radius: 5px; }
+label { font-size: 13px; color: #d8d0c1; }
+#signup { max-width: 430px; margin: 35px auto; padding: 24px; border: 1px solid #39301d; border-radius: 10px; background: var(--panel); }
+@media(max-width:600px) {
+  header { padding: 18px 5%; }
+  .hero { padding: 55px 5%; }
+  main { padding: 25px 5%; }
+}
+</style>
+</head>
+<body><header>
+  <div class="logo">Jerr<span style="color:#d8ad45">Apex</span></div>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#music">Music</a>
+    <a href="#videos">Videos</a>
+    <a href="#comedy">Comedy</a>
+    <a href="#news">News</a>
+  </nav>
+</header><section class="hero" id="home">
+  <div class="tag">Your world. Your entertainment.</div>
+  <h1>Welcome to <span>JerrApex</span><br>Entertainment</h1>
+  <p>Discover music, watch videos, enjoy comedy and explore the latest entertainment stories — all in one place.</p>
+  <a class="button" href="#music">Explore Entertainment</a>
+  <a class="button secondary" href="#signup">Join Us</a>
+</section><main>
+  <section id="music">
+    <div class="section-heading"><h2>Featured <span>Music</span></h2></div>
+    <div class="grid">
+      <article class="card">
+        <div class="art">🎵</div>
+        <div class="card-body">
+          <h3>Music Spotlight</h3>
+          <p>Discover new sounds and featured artists.</p>
+          <p>Music will appear here when uploaded.</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="art">🎧</div>
+        <div class="card-body">
+          <h3>Fresh Releases</h3>
+          <p>Explore upcoming releases and new favourites.</p>
+          <p>Audio player coming when media is connected.</p>
+        </div>
+      </article>
+    </div>
+  </section>  <section id="videos">
+    <div class="section-heading"><h2>Videos & <span>Highlights</span></h2></div>
+    <div class="grid">
+      <article class="card">
+        <div class="art">▶️</div>
+        <div class="card-body">
+          <h3>Featured Videos</h3>
+          <p>Watch music videos, entertainment clips and exclusive content.</p>
+          <p>Video library coming soon.</p>
+        </div>
+      </article>
+    </div>
+  </section>  <section id="comedy">
+    <div class="section-heading"><h2>Comedy <span>Zone</span></h2></div>
+    <div class="grid">
+      <article class="card">
+        <div class="art">😂</div>
+        <div class="card-body">
+          <h3>Laugh Out Loud</h3>
+          <p>Enjoy comedy skits, funny moments and entertaining creators.</p>
+        </div>
+      </article>
+    </div>
+  </section>  <section id="news">
+    <div class="section-heading"><h2>Entertainment <span>News</span></h2></div>
+    <div class="news">
+      <h3>Welcome to JerrApex Entertainment</h3>
+      <p>This is your space for entertainment updates. News articles can be added here as the website develops.</p>
+    </div>
+  </section>  <section id="signup">
+    <div class="tag">Become a member</div>
+    <h2>Join <span>JerrApex</span></h2>
+    <p class="notice">This registration form is a visual demo only. Secure accounts are not connected yet.</p>
+    <form id="demoForm">
+      <label for="name">Your name</label>
+      <input id="name" type="text" placeholder="Enter your name" required>
+      <label for="email">Email address</label>
+      <input id="email" type="email" placeholder="Enter your email" required>
+      <button class="button" type="submit">Join the Community</button>
+    </form>
+    <p id="message" class="notice" aria-live="polite"></p>
+  </section>
+</main><footer>
+  <p>© <span id="year"></span> JerrApex Entertainment. All rights reserved.</p>
+  <p>Music • Videos • Comedy • Entertainment</p>
+</footer><script>
+document.getElementById("year").textContent = new Date().getFullYear();
+document.getElementById("demoForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+  document.getElementById("message").textContent =
+    "Thank you for your interest! Full membership registration will be available after secure account services are connected.";
+});
+</script></body>
+</html>
