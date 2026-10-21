@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080808">
+<title>JerrApex Admin Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+  --gold: #d8ad45;
+  --black: #080808;
+  --panel: #151515;
+  --text: #f7f4ed;
+  --muted: #aaa49a;
+}
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--black);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 22px;
+  border-bottom: 1px solid #39301d;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: 900;
+}
+.logo span, h1 span, h2 span {
+  color: var(--gold);
+}
+
+main {
+  max-width: 850px;
+  margin: 30px auto;
+  padding: 0 16px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid #39301d;
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 22px;
+}
+
+h1 { font-size: 30px; }
+h2 { font-size: 21px; }
+
+p, .muted {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+label {
+  display: block;
+  margin: 14px 0 7px;
+  font-size: 14px;
+}
+
+input, select {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  border-radius: 6px;
+  border: 1px solid #393939;
+  background: #090909;
+  color: white;
+}
+
+button, .button {
+  display: inline-block;
+  padding: 12px 17px;
+  margin-top: 12px;
+  background: var(--gold);
+  color: #080808;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.secondary {
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+}
+
+.danger {
+  background: #8b2828;
+  color: white;
+}
+
+.file {
+  border-bottom: 1px solid #333;
+  padding: 14px 0;
+  overflow-wrap: anywhere;
+}
+
+.file a {
+  color: var(--gold);
+}
+
+#status {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+
+.hidden { display: none !important; }
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: var(--muted);
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Jerr<span>Apex</span> Admin</div>
+  <a class="button secondary" href="./index.html">View Website</a>
+</header>
+
+<main>
+  <section class="panel">
+    <h1>Control <span>Center</span></h1>
+    <p>Manage your music, videos and entertainment content.</p>
+    <p id="status" role="status" aria-live="polite">
+      Enter your configuration and sign in.
+    </p>
+  </section>
+
+  <section class="panel" id="loginPanel">
+    <h2>Administrator <span>Login</span></h2>
+
+    <form id="loginForm">
+      <label for="email">Administrator email</label>
+      <input id="email" type="email" autocomplete="username"
+             required placeholder="Your registered email">
+
+      <label for="password">Password</label>
+      <input id="password" type="password"
+             autocomplete="current-password" required>
+
+      <button id="loginButton" type="submit">Sign In</button>
+    </form>
+  </section>
+
+  <div id="dashboard" class="hidden">
+
+    <section class="panel">
+      <h2>Upload <span>Media</span></h2>
+
+      <form id="uploadForm">
+        <label for="folder">Content category</label>
+        <select id="folder">
+          <option value="Music">Music</option>
+          <option value="Videos">Videos</option>
+          <option value="Comedy">Comedy</option>
+          <option value="Covers">Cover Images</option>
+        </select>
+
+        <label for="mediaFile">Choose a file</label>
+        <input id="mediaFile" type="file" required
+               accept="audio/*,video/*,image/*">
+
+        <label for="mediaTitle">Display title (optional)</label>
+        <input id="mediaTitle" type="text"
+               maxlength="120" placeholder="Song or video title">
+
+        <button id="uploadButton" type="submit">Upload File</button>
+      </form>
+
+      <p class="muted">
+        Upload only content you own or have permission to distribute.
+        Large videos may exceed your storage plan's limits.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>Your Media <span>Library</span></h2>
+
+      <label for="listFolder">Choose category to view</label>
+      <select id="listFolder">
+        <option value="Music">Music</option>
+        <option value="Videos">Videos</option>
+        <option value="Comedy">Comedy</option>
+        <option value="Covers">Cover Images</option>
+      </select>
+
+      <button id="refreshButton" type="button">Refresh Files</button>
+      <div id="fileList"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Account</h2>
+      <p id="accountInfo" class="muted"></p>
+      <button id="logoutButton" class="secondary" type="button">
+        Sign Out
+      </button>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  JerrApex Entertainment · Administrator Control Center
+</footer>
+
+<script>
+(() => {
+  const SUPABASE_URL = '04a7a255-a0e3-40d3-9a73-a6b800915e76'
+'sb_publishable_XiVUI164gvtJL69gugwplg_X-nGnHwj'
+    "https://nuqyongxclroflqigutk.supabase.co";
+
+  // Replace this placeholder with your Supabase publishable key.
+  const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+
+  const BUCKET = "jerrapex-media";
+
+  const status = document.getElementById("status");
+  const loginPanel = document.getElementById("loginPanel");
+  const dashboard = document.getElementById("dashboard");
+  const fileList = document.getElementById("fileList");
+
+  const report = (message) => {
+    status.textContent = message;
+  };
+
+  if (!window.supabase) {
+    report("The Supabase library failed to load. Check your internet connection.");
+    return;
+  }
+
+  if (SUPABASE_PUBLISHABLE_KEY === "PASTE_YOUR_PUBLISHABLE_KEY_HERE") {
+    report("Setup required: add your Supabase publishable key in admin.html.");
+    return;
+  }
+
+  const client = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  let currentUser = null;
+  let busy = false;
+
+  function setBusy(button, value, label) {
+    button.disabled = value;
+    button.textContent = value ? "Please wait..." : label;
+  }
+
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  function showSession(user) {
+    currentUser = user || null;
+    loginPanel.classList.toggle("hidden", !!user);
+    dashboard.classList.toggle("hidden", !user);
+
+    if (user) {
+      document.getElementById("accountInfo").textContent =
+        "Signed in as " + user.email;
+      report("Signed in. You can manage your media.");
+    } else {
+      document.getElementById("accountInfo").textContent = "";
+      fileList.replaceChildren();
+      report("Please sign in to manage your media.");
+    }
+  }
+
+  async function loadFiles() {
+    if (!currentUser || busy) return;
+
+    busy = true;
+    const button = document.getElementById("refreshButton");
+    setBusy(button, true, "Refresh Files");
+    fileList.textContent = "Loading files...";
+
+    try {
+      const folder = document.getElementById("listFolder").value;
+
+      const { data, error } = await client.storage
+        .from(BUCKET)
+        .list(folder, {
+          limit: 100,
+          sortBy: { column: "name", order: "asc" }
+        });
+
+      if (error) throw error;
+
+      fileList.replaceChildren();
+
+      const files = (data || []).filter(item => item.id);
+
+      if (!files.length) {
+        fileList.textContent = "No files found in this category.";
+      }
+
+      for (const item of files) {
+        const path = folder + "/" + item.name;
+        const row = document.createElement("div");
+        row.className = "file";
+
+        const title = document.createElement("strong");
+        title.textContent = item.name;
+
+        const openLink = document.createElement("a");
+        openLink.href = client.storage.from(BUCKET).getPublicUrl(path)
+          .data.publicUrl;
+        openLink.target = "_blank";
+        openLink.rel = "noopener noreferrer";
+        openLink.textContent = " Open file";
+        openLink.style.display = "inline-block";
+        openLink.style.marginLeft = "8px";
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "danger";
+        removeButton.textContent = "Delete";
+
+        removeButton.addEventListener("click", async () => {
+          const confirmed = confirm(
+            "Permanently delete " + item.name + "?"
+          );
+          if (!confirmed) return;
+
+          removeButton.disabled = true;
+
+          try {
+            const { error } = await client.storage
+              .from(BUCKET)
+              .remove([path]);
+
+            if (error) throw error;
+
+            report("File deleted.");
+            await loadFiles();
+          } catch (error) {
+            report("Delete failed: " + error.message);
+            removeButton.disabled = false;
+          }
+        });
+
+        row.append(title, openLink, document.createElement("br"), removeButton);
+        fileList.append(row);
+      }
+
+      report("Media library loaded.");
+    } catch (error) {
+      fileList.textContent = "";
+      report("Could not load files: " + error.message);
+    } finally {
+      busy = false;
+      setBusy(button, false, "Refresh Files");
+    }
+  }
+
+  document.getElementById("loginForm").addEventListener("submit",
+    async event => {
+      event.preventDefault();
+
+      const button = document.getElementById("loginButton");
+      setBusy(button, true, "Sign In");
+
+      try {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        const { data, error } = await client.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+
+        showSession(data.user);
+        await loadFiles();
+      } catch (error) {
+        report("Sign-in failed: " + error.message);
+      } finally {
+        setBusy(button, false, "Sign In");
+      }
+    }
+  );
+
+  document.getElementById("uploadForm").addEventListener("submit",
+    async event => {
+      event.preventDefault();
+
+      if (!currentUser) {
+        report("Please sign in first.");
+        return;
+      }
+
+      const button = document.getElementById("uploadButton");
+      const file = document.getElementById("mediaFile").files[0];
+
+      if (!file) {
+        report("Choose a file first.");
+        return;
+      }
+
+      if (file.size > 50 * 1024 * 1024) {
+        report("This starter dashboard accepts files up to 50 MB.");
+        return;
+      }
+
+      const folder = document.getElementById("folder").value;
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const path = folder + "/" + Date.now() + "-" + safeName;
+
+      setBusy(button, true, "Upload File");
+
+      try {
+        const { error } = await client.storage.from(BUCKET).upload(
+          path,
+          file,
+          {
+            contentType: file.type || "application/octet-stream",
+            upsert: false
+          }
+        );
+
+        if (error) throw error;
+
+        document.getElementById("listFolder").value = folder;
+        document.getElementById("mediaFile").value = "";
+        document.getElementById("mediaTitle").value = "";
+
+        report("Upload successful: " + safeName);
+        await loadFiles();
+      } catch (error) {
+        report("Upload failed: " + error.message);
+      } finally {
+        setBusy(button, false, "Upload File");
+      }
+    }
+  );
+
+  document.getElementById("refreshButton")
+    .addEventListener("click", loadFiles);
+
+  document.getElementById("listFolder")
+    .addEventListener("change", loadFiles);
+
+  document.getElementById("logoutButton").addEventListener("click",
+    async () => {
+      const { error } = await client.auth.signOut();
+
+      if (error) {
+        report("Sign-out failed: " + error.message);
+        return;
+      }
+
+      showSession(null);
+    }
+  );
+
+  client.auth.onAuthStateChange((_event, session) => {
+    showSession(session ? session.user : null);
+  });
+
+  client.auth.getSession().then(({ data, error }) => {
+    if (error) {
+      report("Could not check login: " + error.message);
+      return;
+    }
+
+    showSession(data.session ? data.session.user : null);
+
+    if (data.session) loadFiles();
+  });
+})();
+</script>
+
+</body>
+</html>
